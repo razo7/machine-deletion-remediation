@@ -383,7 +383,7 @@ bundle-push: ## Push the bundle image.
 
 .PHONY: bundle-run
 OPERATOR_NAMESPACE ?= openshift-workload-availability
-bundle-run: operator-sdk ## Run bundle image
+bundle-run: operator-sdk create-ns ## Run bundle image. Default NS is "openshift-workload-availability", redefine OPERATOR_NAMESPACE to override it.
 	$(OPERATOR_SDK) -n $(OPERATOR_NAMESPACE) run bundle $(BUNDLE_IMG)
 
 .PHONY: bundle-run-update
@@ -393,6 +393,10 @@ bundle-run-update: operator-sdk ## Upgrade bundle image
 .PHONY: bundle-cleanup
 bundle-cleanup: operator-sdk ## Remove bundle installed via bundle-run
 	$(OPERATOR_SDK) -n $(OPERATOR_NAMESPACE) cleanup $(OPERATOR_NAME)
+
+.PHONY: create-ns
+create-ns: ## Create namespace
+	kubectl get ns $(OPERATOR_NAMESPACE) 2>&1> /dev/null || kubectl create ns $(OPERATOR_NAMESPACE)
 
 # Build a file-based catalog image
 # https://docs.openshift.com/container-platform/4.14/operators/admin/olm-managing-custom-catalogs.html#olm-managing-custom-catalogs-fb
